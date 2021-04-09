@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
+import PaisSelecionado from "../views/PaisSelecionado.vue";
 
 Vue.use(VueRouter);
 
@@ -12,6 +13,11 @@ const router = new VueRouter({
       path: "/",
       name: "home",
       component: Home,
+    },
+    {
+      path: "/paisselecionado",
+      name: "paisSelecionado",
+      component: PaisSelecionado,
     },
   ],
 });

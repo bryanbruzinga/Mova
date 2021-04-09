@@ -30,6 +30,7 @@ export default {
 <style scoped>
 header {
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  background: white;
 }
 nav ul {
   display: flex;
