@@ -50,6 +50,12 @@ nav ul li button {
   font-family: var(--primary-font);
   padding: 0.5rem 1.5rem;
   cursor: pointer;
+  transition: .3s;
+}
+
+nav ul li button:hover {
+  color: white;
+  background: var(--primary-color)
 }
 
 nav ul li button img {

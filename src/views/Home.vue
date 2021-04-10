@@ -73,7 +73,8 @@
           </select>
         </div>
         <button class="btn" @click.prevent="buscarPaises">Pesquisar</button>
-        <ul class="listaPaises">
+      </form>
+      <ul class="listaPaises">
           <li v-for="(item, index) in paisesFiltrados" :key="index">
             <router-link
               class="btnBandeira"
@@ -84,8 +85,7 @@
             </router-link>
           </li>
         </ul>
-      </form>
-      <Paginacao v-if="paisesFiltrados.length" :total="total"/>
+      <Paginacao v-if="paisesFiltrados.length" :total="total" :offset="offset" :limit="limit" />
     </section>
 </template>
 
@@ -106,8 +106,8 @@ export default {
       valor: "",
       paisesFiltrados: [],
       total: 0,
-    //   offset: 0,
-    //   limit: 0
+      offset: 12,
+      limit: 12
     };
   },
   methods: {
@@ -115,12 +115,17 @@ export default {
       axios.get(this.url).then((r) => {
         this.paises = r.data;
         this.paisesFiltrados = this.paises;
+        this.total = this.paisesFiltrados.length
       });
+      
     },
     buscarPaises() {
       axios
         .get(`${this.url}/${this.selecionado}/${this.valor}`)
-        .then((r) => (this.paisesFiltrados = r.data));
+        .then((r) => {
+            this.paisesFiltrados = r.data
+            this.total = this.paisesFiltrados.length
+            });
     },
     filtrar(valor) {
       valor.filter((valor1, valor2) => {
@@ -137,16 +142,25 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+form {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    margin: 1rem 0;
+    width: 900px;
+}
 p {
   color: var(--primary-color);
   font-size: var(--font-size-14);
+  font-family: var(--font-primary);
 }
 select {
   border: none;
   border-bottom: 1px solid #a8a8a8;
   color: var(--secondary-color);
   width: 220px;
+  font-family: var(--font-primary);
 }
 
 select option {
@@ -160,15 +174,16 @@ select option {
   border: none;
   cursor: pointer;
   border-radius: 10px;
+  font-size: var(--font-size-14);
   color: white;
-  padding: 5px 18px;
+  padding: 0.6rem 1.5rem;
 }
 
 .listaPaises {
-  display: flex;
-  align-items: flex-end;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   justify-content: center;
-  height: 40vh;
+  margin: 0 auto;
 }
 
 .btnBandeira {
@@ -176,15 +191,36 @@ select option {
   cursor: pointer;
   border: none;
   filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+  margin: 1rem;
 }
 
 .btnBandeira img {
-  width: 316px;
-  height: 181px;
+  width: 250px;
+  height: 150px;
+}
+
+@media (max-width: 900px) {
+    form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+    }
+    form div {
+        margin-bottom: 1rem;
+    }
+    select {
+        width: 300px;
+    }
+    .listaPaises {
+        grid-template-columns: 1fr 1fr;
+    }
 }
 
 @media (max-width: 640px) {
     .listaPaises {
+        display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;

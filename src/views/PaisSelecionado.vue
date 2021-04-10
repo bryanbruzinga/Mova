@@ -5,14 +5,22 @@
       <div>
         <li>Nome: {{i.translations.br}}</li>
         <li>Capital: {{i.capital}}</li>
-        <li>Região: {{i.region}}</li>
+        <li>Região:
+        <router-link :to="{path: '/', query:{valor: i.region}}">
+          {{i.region}}
+        </router-link> 
+        </li>
         <li>Sub-região: {{i.subregion}}</li>
         <li>População: {{i.population}}</li>
-        <li>Línguas: {{i.languages[0].nativeName}}</li>
+        <li>Línguas: 
+           <span v-for="(idiomas, index) in i.languages" :key="index">
+            {{idiomas.nativeName}}
+           </span>
+        </li>
       </div>
     </ul>
     <div>
-      <h2>Países Vizinhos</h2>
+      <h3>Países Vizinhos</h3>
       <ul class="bandeiras">
         <li v-for="(i, index) in bandeiras" :key="index">
           <router-link :to="{ name: 'paisSelecionado', params: { pais: i.name }}">
@@ -21,19 +29,27 @@
         </li>
       </ul>
     </div>
+    <Paginacao v-if="bandeiras.length" :total="total" :offset="offset" :limit="limit" />
   </section>
 </template>
 
 <script>
 import axios from "axios";
+import Paginacao from '@/helpers/Paginacao.vue';
 
 export default {
     name: "paisSelecionado",
+    components: {
+      Paginacao
+    },
     data() {
       return {
         info: null,
         siglas: null,
-        bandeiras: []
+        bandeiras: [],
+        total: 0,
+        offset: 12,
+        limit: 12
       }
     },
     mounted() {
@@ -48,7 +64,10 @@ export default {
       puxarFronteira() {
         this.siglas.forEach(item => {
           axios.get(`https://restcountries.eu/rest/v2/name/${item}`)
-          .then(r => this.bandeiras.push(r.data))
+          .then(r => {
+            this.bandeiras.push(r.data)
+            this.total = this.bandeiras.length
+            })
         })
       }
     }
@@ -57,7 +76,7 @@ export default {
 
 <style scoped>
 section {
-  max-width: 1200px;
+  max-width: 1000px;
 }
 .infoPais {
   display: grid;
@@ -72,10 +91,25 @@ section {
   line-height: 2.1;
 }
 
-.imgPais,
+.infoPais div li a {
+  text-decoration: underline;
+}
+
+.imgPais {
+  width: 443px;
+  height: 258px;
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+}
+
+h3 {
+  margin-left: 1.5rem;
+  margin-top: 2rem;
+  font-family: var(--font-primary);
+}
+
 .bandeiras li img {
-  width: 316px;
-  height: 181px;
+  width: 250px;
+  height: 150px;
 }
 
 .bandeiras li img {
@@ -84,7 +118,18 @@ section {
 }
 
 .bandeiras{
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: center;
+}
+
+@media (max-width: 900px) {
+   .bandeiras{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 @media (max-width: 640px) {
@@ -100,11 +145,5 @@ section {
   .infoPais div {
     align-self: flex-start;
   }
-  .bandeiras{
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-
 }
 </style>
