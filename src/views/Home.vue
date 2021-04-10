@@ -5,19 +5,29 @@
             <div class="primeiroSelect">
                 <p>Filtrar por</p>
                 <select name="opcao" v-model="selecionado">
+                    <option value="">Selecione uma opção</option>
                     <option value="region">Região</option>
                     <option value="capital">Capital</option>
                     <option value="lang">Língua</option>
-                    <option value="flag">País</option>
+                    <option value="name">País</option>
                     <option value="cod">Código de ligação</option>
                 </select>
             </div>
-            <button class="btn">Pesquisar</button>
-            <ul>
-                <li class="lista" v-for="(dados, index) in filterItem" :key="index">
-                    <img :src="dados.flag" :alt="dados.name">
+            <div v-if="selecionado" class="primeiroSelect">
+                <p>{{selecionado}}</p>
+                <select name="filtro" v-model="valor">
+                    <option v-for="(item, index) in paises" :key=index :value="item.name" >{{item.name}}</option>
+                </select>
+            </div>
+            <button class="btn" @click.prevent="buscarPaises">Pesquisar</button>
+            <ul class="listaPaises">
+                <li v-for="(item, index) in paisesFiltrados" :key="index">
+                    <router-link class="btnBandeira" tag="button" to="/paisselecionado">
+                        <img :src="item.flag" :alt="item.name">
+                    </router-link>
                 </li>
             </ul>
+            
         </form>
     </section>
   </div>
@@ -25,23 +35,41 @@
 
 <script>
 
-import fetchData from '@/mixins/fetchData.js';
+import axios from 'axios';
 
 export default {
+    
     name: "home",
-    mixins: [fetchData],
     data() {
         return {
+            url: 'https://restcountries.eu/rest/v2',
             selecionado: 'flag',
+            pages: [],
+            paises: null,
+            valor: '',
+            paisesFiltrados: null
+        }
+    },
+    methods: {
+        puxarPaises() {
+            axios.get(this.url)
+            .then(r => {
+                this.paises = r.data
+                this.paisesFiltrados = this.paises;
+                })
+        },
+        buscarPaises() {
+            axios.get(`${this.url}/${this.selecionado}/${this.valor}`)
+            .then(r => this.paisesFiltrados = r.data)
         }
     },
     computed: {
-        filterItem() {
-            return this.api.filter(item => item.region === 'Asia')
-        }
+        // filterItem() {
+        //     return this.api.filter(item => item.flag === this.selecionado)
+        // },
     },
-    created() {
-        this.fetchData('')
+    mounted() {
+        this.puxarPaises();
     }
 }
 </script>
@@ -73,7 +101,20 @@ select option {
     padding: 5px 18px;
 }
 
-.lista img {
+.listaPaises {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    height: 40vh;
+}
+
+.btnBandeira {
+    background: none;
+    cursor: pointer;
+    border: none;
+}
+
+.btnBandeira img {
     width: 316px;
     height: 181px;
 }
