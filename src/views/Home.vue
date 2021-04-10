@@ -8,15 +8,29 @@
                     <option value="">Selecione uma opção</option>
                     <option value="region">Região</option>
                     <option value="capital">Capital</option>
-                    <option value="lang">Língua</option>
-                    <option value="name">País</option>
-                    <option value="cod">Código de ligação</option>
+                    <option value="languages">Língua</option>
+                    <option value="name" selected>País</option>
+                    <option value="callingcode">Código de ligação</option>
                 </select>
             </div>
             <div v-if="selecionado" class="primeiroSelect">
                 <p>{{selecionado}}</p>
-                <select name="filtro" v-model="valor">
-                    <option v-for="(item, index) in paises" :key=index :value="item.name" >{{item.name}}</option>
+                <select name="filtro" v-if="selecionado === 'name'" v-model="valor">
+                    <option  v-for="(item, index) in paises" :key="index" :value="item.name" >{{item.name}}</option>
+                </select>
+                <select name="filtro" v-else-if="selecionado === 'languages'" v-model="valor">
+                    <option  v-for="(item, index) in paises" :key="index" :value="item.languages" >
+                        {{item.languages}}
+                    </option>
+                </select>
+                <select name="filtro" v-else-if="selecionado === 'callingcode'" v-model="valor">
+                    <option  v-for="(item, index) in paises" :key="index" :value="item.callingCodes" >{{item.callingCodes}}</option>
+                </select>
+                <select name="filtro" v-else-if="selecionado === 'capital'" v-model="valor">
+                    <option  v-for="(item, index) in paises" :key="index" :value="item.capital" >{{item.capital}}</option>
+                </select>
+                <select name="filtro" v-else-if="selecionado === 'region'" v-model="valor">
+                    <option  v-for="(item, index) in paises" :key="index" :value="item.region" >{{item.region | filtrar}}</option>
                 </select>
             </div>
             <button class="btn" @click.prevent="buscarPaises">Pesquisar</button>
@@ -43,11 +57,11 @@ export default {
     data() {
         return {
             url: 'https://restcountries.eu/rest/v2',
-            selecionado: 'flag',
+            selecionado: 'name',
             pages: [],
-            paises: null,
+            paises: [],
             valor: '',
-            paisesFiltrados: null
+            paisesFiltrados: []
         }
     },
     methods: {
@@ -61,12 +75,13 @@ export default {
         buscarPaises() {
             axios.get(`${this.url}/${this.selecionado}/${this.valor}`)
             .then(r => this.paisesFiltrados = r.data)
+        },
+        filtrar(valor) {
+            valor.filter((valor1, valor2) => {
+                return valor.indexOf(valor1) === valor2
+            })
+
         }
-    },
-    computed: {
-        // filterItem() {
-        //     return this.api.filter(item => item.flag === this.selecionado)
-        // },
     },
     mounted() {
         this.puxarPaises();
