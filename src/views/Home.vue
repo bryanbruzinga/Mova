@@ -7,12 +7,12 @@
             <option value="">Selecione uma opção</option>
             <option value="region">Região</option>
             <option value="capital">Capital</option>
-            <option value="languages">Língua</option>
+            <option value="lang">Língua</option>
             <option value="name" selected>País</option>
             <option value="callingcode">Código de ligação</option>
           </select>
         </div>
-        <div v-if="selecionado" class="primeiroSelect">
+        <div v-show="selecionado" class="primeiroSelect">
           <p>{{ selecionado }}</p>
           <select name="filtro" v-if="selecionado === 'name'" v-model="valor">
             <option
@@ -24,15 +24,15 @@
           </select>
           <select
             name="filtro"
-            v-else-if="selecionado === 'languages'"
+            v-else-if="selecionado === 'lang'"
             v-model="valor"
           >
             <option
               v-for="(item, index) in paises"
               :key="index"
-              :value="item.languages"
-            >
-              {{ item.languages }}
+              :value="item.languages[0].iso639_1"
+            >            
+              {{ item.languages[0].name }}
             </option>
           </select>
           <select
@@ -85,7 +85,7 @@
           </li>
         </ul>
       </form>
-      <Paginacao v-if="paisesFiltrados.length" :offset="offset" :total="total" :limit="limit" @change-page="changePage" />
+      <Paginacao v-if="paisesFiltrados.length" :total="total"/>
     </section>
 </template>
 
@@ -105,6 +105,9 @@ export default {
       paises: [],
       valor: "",
       paisesFiltrados: [],
+      total: 0,
+    //   offset: 0,
+    //   limit: 0
     };
   },
   methods: {
@@ -124,6 +127,9 @@ export default {
         return valor.indexOf(valor1) === valor2;
       });
     },
+    // changePage(valor) {
+    //     this.offset = valor
+    // }
   },
   mounted() {
     this.puxarPaises();
@@ -169,10 +175,19 @@ select option {
   background: none;
   cursor: pointer;
   border: none;
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
 }
 
 .btnBandeira img {
   width: 316px;
   height: 181px;
+}
+
+@media (max-width: 640px) {
+    .listaPaises {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
 }
 </style>

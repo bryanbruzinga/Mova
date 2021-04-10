@@ -15,7 +15,9 @@
       <h2>Países Vizinhos</h2>
       <ul class="bandeiras">
         <li v-for="(i, index) in bandeiras" :key="index">
-          <img :src="i[0].flag" :alt="i[0].name">
+          <router-link :to="{ name: 'paisSelecionado', params: { pais: i.name }}">
+            <img :src="i[0].flag" :alt="i[0].name">
+          </router-link>
         </li>
       </ul>
     </div>
@@ -67,7 +69,7 @@ section {
 }
 
 .infoPais div {
-  line-height: 1.5;
+  line-height: 2.1;
 }
 
 .imgPais,
@@ -78,9 +80,31 @@ section {
 
 .bandeiras li img {
   margin: 1rem;
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
 }
 
 .bandeiras{
   display: flex;
+}
+
+@media (max-width: 640px) {
+  .infoPais {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .infoPais img {
+    margin-bottom: 1rem;
+  }
+
+  .infoPais div {
+    align-self: flex-start;
+  }
+  .bandeiras{
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
 }
 </style>

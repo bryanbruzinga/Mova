@@ -18,7 +18,7 @@
 
 <script>
 export default {
-  name: "header",
+  name: "cabecalho",
   methods: {
     voltarPagina() {
       window.history.back();
