@@ -23,19 +23,19 @@
       <h3>Países Vizinhos</h3>
       <ul class="bandeiras">
         <li v-for="(i, index) in bandeiras" :key="index">
-          <router-link :to="{ name: 'paisSelecionado', params: { pais: i.name }}">
-            <img :src="i[0].flag" :alt="i[0].name">
+          <router-link :to="{ name: 'paisSelecionado', params: {pais: i.name}}" @click.native="$router.go()">
+            <img :src="i.flag" :alt="i.name">
           </router-link>
         </li>
       </ul>
     </div>
-    <Paginacao v-if="bandeiras.length" :total="total" :offset="offset" :limit="limit" />
+    <Paginacao :totalPaises="totalPaises" :paisesPorPagina="paisesPorPagina" />
   </section>
 </template>
 
 <script>
-import axios from "axios";
-import Paginacao from '@/helpers/Paginacao.vue';
+import { api } from '@/services.js';
+import Paginacao from '@/components/Paginacao.vue';
 
 export default {
     name: "paisSelecionado",
@@ -47,13 +47,12 @@ export default {
         info: null,
         siglas: null,
         bandeiras: [],
-        total: 0,
-        offset: 12,
-        limit: 12
+        totalPaises: 0,
+        paisesPorPagina: 12
       }
     },
     mounted() {
-      axios.get(`https://restcountries.eu/rest/v2/name/${this.$route.params.pais}`)
+      api.get(`/name/${this.$route.params.pais}`)
       .then(r => {
         this.info = r.data
         this.siglas = r.data[0].borders
@@ -63,10 +62,10 @@ export default {
     methods: {
       puxarFronteira() {
         this.siglas.forEach(item => {
-          axios.get(`https://restcountries.eu/rest/v2/name/${item}`)
+          api.get(`/alpha/${item}`)
           .then(r => {
             this.bandeiras.push(r.data)
-            this.total = this.bandeiras.length
+            this.totalPaises = this.bandeiras.length
             })
         })
       }

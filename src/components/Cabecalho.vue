@@ -8,8 +8,9 @@
           </a>
         </li>
         <li>
-          <button @click="voltarPagina">
-          <img src="@/assets/seta.svg" alt="retornar página" />Voltar</button>
+          <button @click="voltarPagina" class="btnVoltar">
+            <img src="@/assets/seta.svg" alt="retornar página" />Voltar
+          </button>
         </li>
       </ul>
     </nav>
@@ -42,7 +43,7 @@ nav ul li {
   margin: 1rem 2rem;
 }
 
-nav ul li button {
+.btnVoltar {
   background: none;
   color: var(--primary-color);
   border: 1px solid;
@@ -53,12 +54,12 @@ nav ul li button {
   transition: .3s;
 }
 
-nav ul li button:hover {
+.btnVoltar:hover {
   color: white;
   background: var(--primary-color)
 }
 
-nav ul li button img {
+.btnVoltar img {
   margin-right: 0.875rem;
 }
 

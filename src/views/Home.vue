@@ -44,7 +44,7 @@
               v-for="(item, index) in paises"
               :key="index"
               :value="item.callingCodes"
-              >{{ item.callingCodes }}</option
+              >{{ item.callingCodes[0]}}</option
             >
           </select>
           <select
@@ -68,7 +68,7 @@
               v-for="(item, index) in paises"
               :key="index"
               :value="item.region"
-              >{{ item.region | filtrar }}</option
+              >{{ item.region}}</option
             >
           </select>
         </div>
@@ -85,13 +85,13 @@
             </router-link>
           </li>
         </ul>
-      <Paginacao v-if="paisesFiltrados.length" :total="total" :offset="offset" :limit="limit" />
+      <Paginacao :totalPaises="totalPaises" :paisesPorPagina="paisesPorPagina" />
     </section>
 </template>
 
 <script>
-import axios from "axios";
-import Paginacao from '@/helpers/Paginacao.vue';
+import { api } from '@/services.js';
+import Paginacao from '@/components/Paginacao.vue';
 
 export default {
   name: "home",
@@ -100,41 +100,37 @@ export default {
   },
   data() {
     return {
-      url: "https://restcountries.eu/rest/v2",
       selecionado: "name",
       paises: [],
+      regioes: [],
       valor: "",
       paisesFiltrados: [],
-      total: 0,
-      offset: 12,
-      limit: 12
+      totalPaises: 0,
+      paisesPorPagina: 12
     };
+  },
+  computed: {
+
   },
   methods: {
     puxarPaises() {
-      axios.get(this.url).then((r) => {
+      api.get().then((r) => {
         this.paises = r.data;
         this.paisesFiltrados = this.paises;
-        this.total = this.paisesFiltrados.length
+        this.totalPaises = Math.ceil(this.paisesFiltrados.length / this.paisesPorPagina)
       });
-      
     },
     buscarPaises() {
-      axios
-        .get(`${this.url}/${this.selecionado}/${this.valor}`)
+      api
+        .get(`/${this.selecionado}/${this.valor}`)
         .then((r) => {
             this.paisesFiltrados = r.data
-            this.total = this.paisesFiltrados.length
+            this.totalPaises = this.paisesFiltrados.length
             });
     },
-    filtrar(valor) {
-      valor.filter((valor1, valor2) => {
-        return valor.indexOf(valor1) === valor2;
-      });
-    },
-    // changePage(valor) {
-    //     this.offset = valor
-    // }
+    removerIguais(array) {
+        return [...new Set(array)];
+    }
   },
   mounted() {
     this.puxarPaises();
@@ -146,8 +142,8 @@ export default {
 form {
     display: flex;
     align-items: center;
-    justify-content: space-around;
-    margin: 1rem 0;
+    justify-content: space-between;
+    margin: 1rem 0 1rem 2rem;
     width: 900px;
 }
 p {
