@@ -211,13 +211,14 @@ select option {
   height: 150px;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 990px) {
   form {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     width: 100%;
+    margin: 0 auto;
   }
   form div {
     margin-bottom: 1rem;
