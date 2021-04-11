@@ -1,76 +1,85 @@
 <template>
   <section>
-    <ul v-for="(i, index) in info" :key="index" class="infoPais">
-      <img class="imgPais" :src="i.flag" :alt="i.name">
-      <div>
-        <li>Nome: {{i.translations.br}}</li>
-        <li>Capital: {{i.capital}}</li>
-        <li>Região:
-        <router-link :to="{path: '/', query:{valor: i.region}}">
-          {{i.region}}
-        </router-link> 
-        </li>
-        <li>Sub-região: {{i.subregion}}</li>
-        <li>População: {{i.population}}</li>
-        <li>Línguas: 
-           <span v-for="(idiomas, index) in i.languages" :key="index">
-            {{idiomas.nativeName}}
-           </span>
-        </li>
-      </div>
-    </ul>
-    <div>
-      <h3>Países Vizinhos</h3>
-      <ul class="bandeiras">
-        <li v-for="(i, index) in bandeiras" :key="index">
-          <router-link :to="{ name: 'paisSelecionado', params: {pais: i.name}}" @click.native="$router.go()">
-            <img :src="i.flag" :alt="i.name">
-          </router-link>
-        </li>
-      </ul>
+    <div v-if="loading">
+      <Loading />
     </div>
+    <transition>
+      <ul v-for="(i, index) in info" :key="index" class="infoPais">
+        <img class="imgPais" :src="i.flag" :alt="i.name" />
+        <div>
+          <li>Nome: {{ i.translations.br }}</li>
+          <li>Capital: {{ i.capital }}</li>
+          <li>
+            Região:
+            <router-link :to="{ path: `/region/${i.region}` }">
+              {{ i.region }}
+            </router-link>
+          </li>
+          <li>Sub-região: {{ i.subregion }}</li>
+          <li>População: {{ i.population }}</li>
+          <li>
+            Línguas:
+            <span v-for="(idiomas, index) in i.languages" :key="index">
+              {{ idiomas.nativeName }}
+            </span>
+          </li>
+        </div>
+      </ul>
+      </transition>
+      <div>
+        <h3>Países Vizinhos</h3>
+        <ul class="bandeiras">
+          <li v-for="(i, index) in bandeiras" :key="index">
+            <router-link
+              :to="{ name: 'paisSelecionado', params: { pais: i.name } }"
+              @click.native="$router.go()"
+            >
+              <img :src="i.flag" :alt="i.name" />
+            </router-link>
+          </li>
+        </ul>
+      </div>
+    
     <Paginacao :totalPaises="totalPaises" :paisesPorPagina="paisesPorPagina" />
   </section>
 </template>
 
 <script>
-import { api } from '@/services.js';
-import Paginacao from '@/components/Paginacao.vue';
+import { api } from "@/services.js";
+import Paginacao from "@/components/Paginacao.vue";
 
 export default {
-    name: "paisSelecionado",
-    components: {
-      Paginacao
+  name: "paisSelecionado",
+  components: {
+    Paginacao,
+  },
+  data() {
+    return {
+      info: null,
+      siglas: null,
+      bandeiras: [],
+      totalPaises: 0,
+      paisesPorPagina: 12,
+    };
+  },
+  mounted() {
+    api.get(`/name/${this.$route.params.pais}`).then((r) => {
+      this.info = r.data;
+      this.siglas = r.data[0].borders;
+      this.puxarFronteira();
+    });
+  },
+  methods: {
+    puxarFronteira() {
+      this.siglas.forEach((item) => {
+        api.get(`/alpha/${item}`).then((r) => {
+          this.bandeiras.push(r.data);
+          this.totalPaises = this.bandeiras.length;
+        });
+      });
     },
-    data() {
-      return {
-        info: null,
-        siglas: null,
-        bandeiras: [],
-        totalPaises: 0,
-        paisesPorPagina: 12
-      }
-    },
-    mounted() {
-      api.get(`/name/${this.$route.params.pais}`)
-      .then(r => {
-        this.info = r.data
-        this.siglas = r.data[0].borders
-        this.puxarFronteira()
-      })
-    },
-    methods: {
-      puxarFronteira() {
-        this.siglas.forEach(item => {
-          api.get(`/alpha/${item}`)
-          .then(r => {
-            this.bandeiras.push(r.data)
-            this.totalPaises = this.bandeiras.length
-            })
-        })
-      }
-    }
-}
+  },
+};
 </script>
 
 <style scoped>
@@ -116,14 +125,14 @@ h3 {
   filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
 }
 
-.bandeiras{
+.bandeiras {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   align-items: center;
 }
 
 @media (max-width: 900px) {
-   .bandeiras{
+  .bandeiras {
     display: flex;
     flex-direction: column;
     align-items: center;

@@ -53,7 +53,7 @@ ul {
 :root {
   --primary-color: #6D2080;
   --secondary-color: #8D8D8D;
-  --background: ##E5E5E5;
+  --background: #E5E5E5;
   --font-primary: 'Montserrat', sans-serif;
   --font-size-14: 0.875rem;
   --font-size-16: 1rem;

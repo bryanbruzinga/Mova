@@ -1,55 +1,44 @@
 <template>
-  <ul class="paginacao">
-    <li v-for="page in pages" :key="page">
-      <router-link :to="{query: {_page: pagina}}">
-        {{page}}
-      </router-link>
-    </li>
-  </ul>
+  <div class="paginacao">
+    <button v-for="page in pages" :key="page" @click="changePage(index)">
+      {{page}}
+    </button>
+  </div>
 </template>
 
 <script>
 export default {
     name: "paginacao",
     props: {
+      offset: {
+        type: [String, Number],
+        default: 0,
+      },
       totalPaises: {
-        type: Number,
+        type: [String, Number],
         required: true,
       },
       paisesPorPagina: {
-        type: Number,
+        type: [String, Number],
         default: 12,
-      }
-    },
-    methods: {
-      query(pagina) {
-        return {
-          ...this.$route.query,
-          _page: pagina
-        }
-      }
+      },
     },
     computed: {
-      paginas() {
-        const current = Number(this.$route.query._page);
-        const range = 12;
-        const offset = Math.ceil(range/2);
-        const total = this.paginasTotal;
-        const pagesArray = [];
-
-        for (let i = 1; i <= total; i++) {
-          pagesArray.push(i)
-        }
-        pagesArray.splice(0, current - offset);
-        pagesArray.splice(range, total);
-        return pagesArray;
+      current() {
+        return this.offset ? this.offset + 1 : 1;
       },
-      paginasTotal() {
-        const total = this.totalPaises / this.paisesPorPagina;
-        return (total !== Infinity) ? Math.ceil(total) : 0;
-      }
+      pages() {
+        const qty = Math.ceil(this.totalPaises / this.paisesPorPagina);
+        if (qty <= 1) return [1];
+        return Array.from(Array(qty).keys(), (i) => i + 1);
+      },
+  },
+  methods: {
+    changePage(offset) {
+      this.$emit('change-page', offset);
     },
-}
+  },
+};
 </script>
 
 <style scoped>
@@ -61,7 +50,7 @@ export default {
   margin: 1.5rem 0;
 }
 
-.paginacao li {
+.paginacao button {
   background: none;
   padding: 0.875rem;
   border: none;
@@ -74,7 +63,7 @@ export default {
   transition: .3s;
 }
 
-.paginacao li:hover {
+.paginacao button:hover {
   background: var(--primary-color);
   color: white;
 }
@@ -83,7 +72,7 @@ export default {
   .paginacao {
     flex-wrap: wrap;
   }
-  .paginacao li {
+  .paginacao button {
     margin: 0.4rem;
   }
 }
