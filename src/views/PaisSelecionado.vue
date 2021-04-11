@@ -60,21 +60,26 @@ export default {
       bandeiras: [],
       totalPaises: 0,
       paisesPorPagina: 12,
+      loading: false
     };
   },
   mounted() {
+    this.loading = true
     api.get(`/name/${this.$route.params.pais}`).then((r) => {
       this.info = r.data;
       this.siglas = r.data[0].borders;
       this.puxarFronteira();
+      this.loading = false;
     });
   },
   methods: {
     puxarFronteira() {
+      this.loading = true
       this.siglas.forEach((item) => {
         api.get(`/alpha/${item}`).then((r) => {
           this.bandeiras.push(r.data);
           this.totalPaises = this.bandeiras.length;
+          this.loading = false;
         });
       });
     },

@@ -116,6 +116,7 @@ export default {
       paisesFiltrados: [],
       totalPaises: 0,
       paisesPorPagina: 12,
+      loading: false
     };
   },
   methods: {
