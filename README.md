@@ -9,6 +9,8 @@
 <ul>
   <li>VueJs 2</li>
   <li>Vue Router</li>
+  <li>Vuex</li>
+  <li>Axios</li>
 </ul>
 
 <h2>Link do projeto</h2>
