@@ -13,6 +13,9 @@ const router = new VueRouter({
       path: "/",
       name: "home",
       component: Home,
+      params: {
+        region: "",
+      },
     },
     {
       path: "/:pais",

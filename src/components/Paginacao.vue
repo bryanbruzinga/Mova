@@ -1,42 +1,33 @@
 <template>
   <div class="paginacao">
-    <button v-for="page in pages" :key="page" @click="changePage(index)">
-      {{page}}
-    </button>
+    <button @click="anterior">Voltar</button>
+    <div v-for="(pagina, index) in totalPaginas" :key="index">
+      <button>{{pagina}}</button>
+    </div>
+    <button @click="proximo">Próximo</button>
   </div>
 </template>
 
 <script>
 export default {
     name: "paginacao",
-    props: {
-      offset: {
-        type: [String, Number],
-        default: 0,
-      },
-      totalPaises: {
-        type: [String, Number],
-        required: true,
-      },
-      paisesPorPagina: {
-        type: [String, Number],
-        default: 12,
-      },
-    },
+    props: ['paisesFiltrados', 'postsPorPagina', 'paginaAtual'],
     computed: {
-      current() {
-        return this.offset ? this.offset + 1 : 1;
-      },
-      pages() {
-        const qty = Math.ceil(this.totalPaises / this.paisesPorPagina);
-        if (qty <= 1) return [1];
-        return Array.from(Array(qty).keys(), (i) => i + 1);
-      },
-  },
+      totalPaginas() {
+        return Math.ceil(this.paisesFiltrados.length / this.postsPorPagina)
+      }
+    },   
   methods: {
-    changePage(offset) {
-      this.$emit('change-page', offset);
+    proximo() {
+      if (this.paginaAtual < this.totalPaginas) {
+        this.paginaAtual++
+      }
     },
+    anterior() {
+      if (this.paginaAtual > 1) {
+        this.paginaAtual--
+      }
+    }
   },
 };
 </script>

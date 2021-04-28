@@ -11,7 +11,7 @@
           <li>Capital: {{ i.capital }}</li>
           <li>
             Região:
-            <router-link :to="{ path: `/region/${i.region}` }">
+            <router-link :to="{ path: `/`}" :valores="`${i.region}`">
               {{ i.region }}
             </router-link>
           </li>
@@ -60,7 +60,8 @@ export default {
       bandeiras: [],
       totalPaises: 0,
       paisesPorPagina: 12,
-      loading: false
+      loading: false,
+      valores: null
     };
   },
   mounted() {

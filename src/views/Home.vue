@@ -79,7 +79,7 @@
     </div>
     <transition>
       <ul class="listaPaises">
-        <li v-for="(item, index) in paisesFiltrados" :key="index">
+        <li v-for="(item, index) in limitarQuantidadePaises" :key="index">
           <router-link
             class="btnBandeira"
             tag="button"
@@ -90,12 +90,7 @@
         </li>
       </ul>
     </transition>
-    <Paginacao
-      :totalPaises="totalPaises"
-      :paisesPorPagina="paisesPorPagina"
-      @change-page="changePage"
-      :offset="offset"
-    />
+    <Paginacao :paisesFiltrados="paisesFiltrados" :paginaAtual="paginaAtual" :postsPorPagina="postsPorPagina" />
   </section>
 </template>
 
@@ -114,10 +109,15 @@ export default {
       paises: [],
       valor: "",
       paisesFiltrados: [],
-      totalPaises: 0,
-      paisesPorPagina: 12,
-      loading: false
+      loading: false,
+      paginaAtual: 1,
+      postsPorPagina: 12
     };
+  },
+   computed: {
+      limitarQuantidadePaises() {
+        return this.paisesFiltrados.slice(((this.paginaAtual - 1) * this.postsPorPagina), (this.paginaAtual * this.postsPorPagina) )
+    }
   },
   methods: {
     puxarPaises() {
@@ -126,22 +126,14 @@ export default {
         this.paises = r.data;
         this.paisesFiltrados = this.paises;
         this.loading = false;
-        this.totalPaises = Math.ceil(
-          this.paisesFiltrados.length / this.paisesPorPagina
-        );
       });
     },
     buscarPaises() {
       this.loading = true;
       api.get(`/${this.selecionado}/${this.valor}`).then((r) => {
         this.paisesFiltrados = r.data;
-        this.totalPaises = this.paisesFiltrados.length;
         this.loading = false;
       });
-    },
-    changePage(value) {
-      this.offset = value;
-      this.puxarPaises();
     },
   },
   mounted() {
