@@ -11,7 +11,7 @@
 <script>
 export default {
     name: "paginacao",
-    props: ['paisesFiltrados', 'postsPorPagina'],
+    props: ['paisesFiltrados', 'postsPorPagina', 'bandeiras'],
     data() {
       return {
         estaAtivo: false

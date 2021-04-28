@@ -4,22 +4,22 @@
       <Loading />
     </div>
     <transition>
-      <ul v-for="(i, index) in info" :key="index" class="infoPais">
-        <img class="imgPais" :src="i.flag" :alt="i.name" />
+      <ul v-for="(paisSelecionado, index) in info" :key="index" class="infoPais">
+        <img class="imgPais" :src="paisSelecionado.flag" :alt="paisSelecionado.name" />
         <div>
-          <li>Nome: {{ i.translations.br }}</li>
-          <li>Capital: {{ i.capital }}</li>
+          <li>Nome: {{ paisSelecionado.translations.br }}</li>
+          <li>Capital: {{ paisSelecionado.capital }}</li>
           <li>
             Região:
-            <router-link :to="{ path: `/`}" :valores="`${i.region}`">
-              {{ i.region }}
+            <router-link :to="{ path: `/`}" :valores="`${paisSelecionado.region}`">
+              {{ paisSelecionado.region }}
             </router-link>
           </li>
-          <li>Sub-região: {{ i.subregion }}</li>
-          <li>População: {{ i.population }}</li>
+          <li>Sub-região: {{ paisSelecionado.subregion }}</li>
+          <li>População: {{ paisSelecionado.population }}</li>
           <li>
             Línguas:
-            <span v-for="(idiomas, index) in i.languages" :key="index">
+            <span v-for="(idiomas, index) in paisSelecionado.languages" :key="index">
               {{ idiomas.nativeName }}
             </span>
           </li>
@@ -29,18 +29,18 @@
       <div>
         <h3>Países Vizinhos</h3>
         <ul class="bandeiras">
-          <li v-for="(i, index) in bandeiras" :key="index">
+          <li v-for="(paisFronteira, index) in limitarQuantidadePaises" :key="index">
             <router-link
-              :to="{ name: 'paisSelecionado', params: { pais: i.name } }"
+              :to="{ name: 'paisSelecionado', params: { pais: paisFronteira.name } }"
               @click.native="$router.go()"
             >
-              <img :src="i.flag" :alt="i.name" />
+              <img :src="paisFronteira.flag" :alt="paisFronteira.name" />
             </router-link>
           </li>
         </ul>
       </div>
     
-    <Paginacao :totalPaises="totalPaises" :paisesPorPagina="paisesPorPagina" />
+    <Paginacao :bandeiras="bandeiras" :postsPorPagina="postsPorPagina" />
   </section>
 </template>
 
@@ -58,8 +58,7 @@ export default {
       info: null,
       siglas: null,
       bandeiras: [],
-      totalPaises: 0,
-      paisesPorPagina: 12,
+      postsPorPagina: 10,
       loading: false,
       valores: null
     };
@@ -72,6 +71,11 @@ export default {
       this.puxarFronteira();
       this.loading = false;
     });
+  },
+  computed: {
+      limitarQuantidadePaises() {
+        return this.bandeiras.slice(((this.$store.state.paginaAtual - 1) * this.postsPorPagina), (this.$store.state.paginaAtual * this.postsPorPagina) )
+    }
   },
   methods: {
     puxarFronteira() {
