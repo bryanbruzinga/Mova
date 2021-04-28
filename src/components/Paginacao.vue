@@ -2,7 +2,7 @@
   <div class="paginacao">
     <button @click="anterior">Voltar</button>
     <div v-for="(pagina, index) in totalPaginas" :key="index">
-      <button>{{pagina}}</button>
+      <button :class="{ativo: estaAtivo}" @click="mudarPaginaPara(pagina)">{{pagina}}</button>
     </div>
     <button @click="proximo">Próximo</button>
   </div>
@@ -11,24 +11,32 @@
 <script>
 export default {
     name: "paginacao",
-    props: ['paisesFiltrados', 'postsPorPagina', 'paginaAtual'],
+    props: ['paisesFiltrados', 'postsPorPagina'],
+    data() {
+      return {
+        estaAtivo: false
+      }
+    },
+    methods: {
+      proximo() {
+        if (this.$store.state.paginaAtual < this.totalPaginas) {
+        this.$store.state.paginaAtual++   
+      }
+    },
+    anterior() {
+      if (this.$store.state.paginaAtual > 1) {
+        this.$store.state.paginaAtual--
+      }
+    },
+    mudarPaginaPara(pagina) {
+      this.$store.state.paginaAtual = pagina
+    }
+    },
     computed: {
       totalPaginas() {
         return Math.ceil(this.paisesFiltrados.length / this.postsPorPagina)
       }
-    },   
-  methods: {
-    proximo() {
-      if (this.paginaAtual < this.totalPaginas) {
-        this.paginaAtual++
-      }
     },
-    anterior() {
-      if (this.paginaAtual > 1) {
-        this.paginaAtual--
-      }
-    }
-  },
 };
 </script>
 
@@ -57,6 +65,10 @@ export default {
 .paginacao button:hover {
   background: var(--primary-color);
   color: white;
+}
+
+button.ativo {
+  background: blue;
 }
 
 @media (max-width: 640px) {

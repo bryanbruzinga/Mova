@@ -90,7 +90,10 @@
         </li>
       </ul>
     </transition>
-    <Paginacao :paisesFiltrados="paisesFiltrados" :paginaAtual="paginaAtual" :postsPorPagina="postsPorPagina" />
+    <Paginacao 
+    :paisesFiltrados="paisesFiltrados"
+    :postsPorPagina="postsPorPagina"
+      />
   </section>
 </template>
 
@@ -110,13 +113,12 @@ export default {
       valor: "",
       paisesFiltrados: [],
       loading: false,
-      paginaAtual: 1,
       postsPorPagina: 12
     };
   },
    computed: {
       limitarQuantidadePaises() {
-        return this.paisesFiltrados.slice(((this.paginaAtual - 1) * this.postsPorPagina), (this.paginaAtual * this.postsPorPagina) )
+        return this.paisesFiltrados.slice(((this.$store.state.paginaAtual - 1) * this.postsPorPagina), (this.$store.state.paginaAtual * this.postsPorPagina) )
     }
   },
   methods: {
@@ -133,6 +135,7 @@ export default {
       api.get(`/${this.selecionado}/${this.valor}`).then((r) => {
         this.paisesFiltrados = r.data;
         this.loading = false;
+        this.$store.state.paginaAtual = 1
       });
     },
   },
