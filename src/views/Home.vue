@@ -3,7 +3,7 @@
     <form>
       <div class="primeiroSelect">
         <p>Filtrar por</p>
-        <select name="opcao" v-model="selecionado">
+        <select name="opcao" v-model="selecionado" @change="removerIguais">
           <option value="">Selecione uma opção</option>
           <option value="region">Região</option>
           <option value="capital">Capital</option>
@@ -64,12 +64,9 @@
           v-else-if="selecionado === 'region'"
           v-model="valor"
         >
-          <option
-            v-for="(item, index) in paises"
-            :key="index"
-            :value="item.region"
-            >{{ item.region }}</option
-          >
+          <option v-for="(item, index) in region" :key="index" :value="item">{{
+            item
+          }}</option>
         </select>
       </div>
       <button class="btn" @click.prevent="buscarPaises">Pesquisar</button>
@@ -90,10 +87,10 @@
         </li>
       </ul>
     </transition>
-    <Paginacao 
-    :paisesFiltrados="paisesFiltrados"
-    :postsPorPagina="postsPorPagina"
-      />
+    <Paginacao
+      :paisesFiltrados="paisesFiltrados"
+      :postsPorPagina="postsPorPagina"
+    />
   </section>
 </template>
 
@@ -113,15 +110,27 @@ export default {
       valor: "",
       paisesFiltrados: [],
       loading: false,
-      postsPorPagina: 12
+      postsPorPagina: 12,
+      region: [],
     };
   },
-   computed: {
-      limitarQuantidadePaises() {
-        return this.paisesFiltrados.slice(((this.$store.state.paginaAtual - 1) * this.postsPorPagina), (this.$store.state.paginaAtual * this.postsPorPagina) )
-    }
+  computed: {
+    limitarQuantidadePaises() {
+      return this.paisesFiltrados.slice(
+        (this.$store.state.paginaAtual - 1) * this.postsPorPagina,
+        this.$store.state.paginaAtual * this.postsPorPagina
+      );
+    },
   },
   methods: {
+    removerIguais() {
+      const ArrayComIguais = [];
+      return this.paises.map((item) => {
+        ArrayComIguais.push(item[this.selecionado]);
+        this[this.selecionado] = new Set(ArrayComIguais);
+        console.log(this[this.selecionado]);
+      });
+    },
     puxarPaises() {
       this.loading = true;
       api.get().then((r) => {
@@ -135,7 +144,7 @@ export default {
       api.get(`/${this.selecionado}/${this.valor}`).then((r) => {
         this.paisesFiltrados = r.data;
         this.loading = false;
-        this.$store.state.paginaAtual = 1
+        this.$store.state.paginaAtual = 1;
       });
     },
   },
